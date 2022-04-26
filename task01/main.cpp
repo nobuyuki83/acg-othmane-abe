@@ -9,6 +9,13 @@
 #include "stb_image.h"
 #include "delfem2/glfw/viewer2.h"
 
+#include <vector>
+#include "opencv2/opencv.hpp"
+using namespace cv;
+
+// using namespace std;
+
+
 Eigen::Matrix<double,4,4,Eigen::RowMajor> GetHomographicTransformation(
     const double c1[4][2])
 {
@@ -19,17 +26,41 @@ Eigen::Matrix<double,4,4,Eigen::RowMajor> GetHomographicTransformation(
       {-0.5,+0.5} };
   Eigen::Matrix<double,4,4,Eigen::RowMajor> m;
   // set identity as default
-    m <<
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1;
+    // m <<
+    //   1, 0, 0, 0,
+    //   1, 1, 0, 0,
+    //   0, 0, 1, 0,
+    //   0, 0, 0, 1;
+    
   // write some code to compute the 4x4 Homographic transformation matrix `m`;
   // `m` should transfer :
-  // (c0[0][0],c0[][1],z) -> (c1[0][0],c1[0][1],z)
-  // (c0[1][0],c0[][1],z) -> (c1[1][0],c1[1][1],z)
-  // (c0[2][0],c0[][1],z) -> (c1[2][0],c1[2][1],z)
-  // (c0[3][0],c0[][1],z) -> (c1[3][0],c1[3][1],z)
+  // (c0[0][0],c0[0][1],z) -> (c1[0][0],c1[0][1],z)
+  // (c0[1][0],c0[1][1],z) -> (c1[1][0],c1[1][1],z)
+  // (c0[2][0],c0[2][1],z) -> (c1[2][0],c1[2][1],z)
+  // (c0[3][0],c0[3][1],z) -> (c1[3][0],c1[3][1],z)
+
+    std::vector<Point2f> pts_src;
+    pts_src.push_back(Point2f(c0[0][0],c0[0][1]));
+    pts_src.push_back(Point2f(c0[1][0],c0[1][1]));
+    pts_src.push_back(Point2f(c0[2][0],c0[2][1]));
+    pts_src.push_back(Point2f(c0[3][0],c0[3][1]));
+
+    std::vector<Point2f> pts_dst;
+    pts_dst.push_back(Point2f(c1[0][0],c1[0][1]));
+    pts_dst.push_back(Point2f(c1[1][0],c1[1][1]));
+    pts_dst.push_back(Point2f(c1[2][0],c1[2][1]));
+    pts_dst.push_back(Point2f(c1[3][0],c1[3][1]));
+
+    Mat h = findHomography(pts_src, pts_dst);
+    // std::cout << "Homography Matrix:\n" << h << std::endl;    
+
+    m <<
+      h.at<double>(0,0), h.at<double>(0,1), 0,  h.at<double>(0,2),
+      h.at<double>(1,0), h.at<double>(1,1), 0,  h.at<double>(1,2),
+      0, 0, 1, 0,
+      h.at<double>(2,0), h.at<double>(2,1), 0,  h.at<double>(2,2);
+    
+    // std::cout << "ModelView Matrix:\n" << m << std::endl;
 
   return m;
 }
@@ -90,7 +121,7 @@ int main() {
         {+0.5, -0.5},
         {+0.5 - 0.4*cos(1*time), +0.5 - 0.4*sin(3*time)},
         {-0.5 + 0.4*sin(2*time), +0.5 + 0.4*cos(5*time)} };
-
+  
     Eigen::Matrix<double,4,4,Eigen::ColMajor> modelview_matrix = GetHomographicTransformation(corners);
 
     ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

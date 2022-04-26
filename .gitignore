@@ -36,6 +36,8 @@
 CMakeSettings.json
 out
 
+debug
+
 # CLion
 .idea
 cmake-build-debug

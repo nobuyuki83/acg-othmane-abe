@@ -22,6 +22,10 @@ add_definitions(-DSOURCE_DIR="${PROJECT_SOURCE_DIR}")
 #############################
 # specifying libraries to use
 
+# use opencv
+find_package(OpenCV REQUIRED)
+
+
 # use opengl
 find_package(OpenGL REQUIRED)
 
@@ -41,6 +45,7 @@ include_directories(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}/../external
   ${CMAKE_CURRENT_SOURCE_DIR}/../external/delfem2/include
 )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 add_executable(${PROJECT_NAME}
 #  main_ans.cpp
@@ -53,6 +58,9 @@ target_link_libraries(${PROJECT_NAME}
   Eigen3::Eigen
 )
 
+target_link_libraries(
+    ${PROJECT_NAME} ${OpenCV_LIBRARIES}
+)
 #############################
 # showing status of libraries
 
