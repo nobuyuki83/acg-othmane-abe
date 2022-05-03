@@ -30,8 +30,23 @@ void main()
     // the "back" direction (i.e., +Z direction) will be projected as the unit circle in XY plane.
     // in GLSL, you can use built-in math function (e.g., sqrt, atan).
     // look at page 56 of https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.1.20.pdf
-    float x1 = x0;
-    float y1 = y0;
-    float z1 = z0;
+    // float x1 = x0;
+    // float y1 = y0;
+    // float z1 = z0;
+
+    // transform to spherical coordinates
+    float r = sqrt(x0*x0 + y0*y0 + z0*z0);
+    float theta = atan( sqrt(x0*x0 + y0*y0), z0);
+    float phi = atan(y0,  x0); 
+    
+    // fisheye equidistant projection model d=f*theta with f focal length
+    // since theta=pi maps to unit circle i.e. d=1 then f=1/pi 
+    
+    float d = theta / PI;
+
+    float x1 = d * cos(phi);
+    float y1 = d * sin(phi);
+    float z1 = 0;
+
     gl_Position = vec4(x1,y1,z1,1); // homogenious coordinate
 }
