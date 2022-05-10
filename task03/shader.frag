@@ -16,18 +16,38 @@ float sdf_box( vec3 pos, vec3 hsize )
   return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
 }
 
+float sdf_sphere( vec3 pos, float size )
+{
+  return length(pos)-size;
+}
+
+
 // Definition of singed distance funtion called from
 float SDF(vec3 pos)
 {
   // for "problem2", write some code below to return the SDF where
   // many small spheres are caved out from a big sphere.
-  // The radius of big sphere is `0.8` and its center is at the origin
-  // The radius of the small spheres is `0.12` and it's repeaded at intrval of `0.2` in the grid pattern
+  // The radius of big sphere is `0.8` and its SSS is at the origin
+  // The radius of the small spheres is `0.12` and it's repeaed at intrval of `0.2` in the grid pattern
   // Look Inigo Quilez's article for hints:
   // https://iquilezles.org/articles/distfunctions/
 
   // for "problem2" the code below is not used.
-  return sdf_box(pos, vec3(0.1,0.2,0.3));
+  // return sdf_box(pos, vec3(0.1,0.2,0.3));
+  float r = 0.8;
+  float rr = 0.12;
+  float interval = 0.2;
+
+  float m = sdf_sphere(pos, r);
+  for(int i=-4; i<=4; ++i){
+    for(int j=-4; j<=4; ++j){
+      for(int k=-4; k<=4; ++k){
+        m = max(m, -sdf_sphere(pos+vec3(interval*i,interval*j,interval*k), 0.12) );
+      }
+    }
+  }
+
+  return m;
 }
 
 void main()
