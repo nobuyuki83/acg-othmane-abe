@@ -49,6 +49,7 @@ external/eigen-*
 external/eigenlib
 *.DS_Store  
 build
+debug
 
 !assets/armadillo1.obj
 
