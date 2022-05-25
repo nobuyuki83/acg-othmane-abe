@@ -49,7 +49,7 @@ external/eigen-*
 external/eigenlib
 *.DS_Store  
 build
-
+debug
 !assets/armadillo1.obj
 
 */main_ans.cpp
