@@ -124,11 +124,15 @@ int main() {
       const Eigen::Vector3d pos_def = arb.pos_def; // output position
       const Eigen::Matrix<double,3,8> diff_pos_def = arb.diff_pos_def; // differentiation of output position
       double W0 = 0.5*(pos_def - pos_trg).dot(pos_def - pos_trg); // energy before update
-
       // write some code below to update arb.angle to decrease energy using Levenberg–Marquardt(LM) algorithm
       // if energy is zero, the tip of the cone (output position) and the red sphere (target position) match.
       // Adjust the coefficient LM algorithm such that the energy decrease after updating "arb.angle".
       // The implementation should be 3-5 in lines.
+      double alpha = 20.0;
+      const Eigen::Matrix<double, 8, 8> I = Eigen::Matrix<double, 8, 8>::Identity();
+      const Eigen::Matrix<double, 3, 8> J = arb.diff_pos_def;
+      const Eigen::Matrix<double, 8, 1>  T = (J.transpose()*J + (1.0/alpha)*I).inverse() * J.transpose() * (pos_def - pos_trg);
+      arb.angle -= T;
 
       // editing ends here
       arb.UpdateTransformations();
