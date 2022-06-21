@@ -49,6 +49,7 @@ external/eigen-*
 external/eigenlib
 *.DS_Store  
 build
+debug
 
 */main_ans.cpp
 */shader_ans.vert
